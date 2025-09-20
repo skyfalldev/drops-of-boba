@@ -14,7 +14,7 @@ async function main() {
   
   const BASE_DOMAIN = "api2.hackclub.com";
   const CDN_API = "https://cdn.hackclub.com/api/v3/new";
-  const API_TOKEN = process.env.API_TOKEN;
+  const API_TOKEN = "beans";
   
   if (!API_TOKEN) {
     console.error('API_TOKEN environment variable is required');
