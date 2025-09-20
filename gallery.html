@@ -50,17 +50,90 @@
   <div id="content">
     <div class="container" id="submissions-content">
       <div id="grid-gallery">
-        Loading...
+        <div class="grid-submission" data-event-code="WINTER2024">
+        <div class="submission-photo" style="background-image: url(https://assets.hackclub.com/flag-standalone.svg);"></div>
+        <span class="status approved"></span>
+        <div class="links">
+          <a href="https://github.com/hackclub/example" class="github-button"><i class="fa-brands fa-github"></i> Github</a>
+          <a href="https://hackclub.com" class="demo-button"><i class="fa-solid fa-link"></i> Demo</a>
+        </div>
+      </div>
+    
+      <div class="grid-submission" data-event-code="WINTER2024">
+        <div class="submission-photo" style="background-image: url(https://hc-cdn.hel1.your-objectstorage.com/s/v3/ee0109f20430335ebb5cd3297a973ce244ed01cf_depositphotos_247872612-stock-illustration-no-image-available-icon-vector.jpg);"></div>
+        <span class="status pending"></span>
+        <div class="links">
+          <a href="https://github.com/example/project" class="github-button"><i class="fa-brands fa-github"></i> Github</a>
+          <a href="https://example.github.io/project" class="demo-button"><i class="fa-solid fa-link"></i> Demo</a>
+        </div>
+      </div>
+    
+      <div class="grid-submission" data-event-code="SUMMER2024">
+        <div class="submission-photo" style="background-image: url(https://assets.hackclub.com/flag-orpheus-left.png);"></div>
+        <span class="status approved"></span>
+        <div class="links">
+          <a href="https://github.com/another/example" class="github-button"><i class="fa-brands fa-github"></i> Github</a>
+          <a href="https://another.github.io/example" class="demo-button"><i class="fa-solid fa-link"></i> Demo</a>
+        </div>
+      </div>
       </div>
     </div>
   </div>
 
   <div id="footer">
-
     <p style="display: flex; gap: 4px; justify-content: center;">Made with <img src="images/boba-parrot.gif" alt="boba"
         title="A parrot with boba" height="20px" /> by <a href="https://hackclub.com">Hack Club</a>.</p>
   </div>
-  <script src="gallery.js"></script>
+  
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const statusQuery = urlParams.get("status");
+    const eventCode = urlParams.get("eventCode") || "";
+    
+    document.getElementById("event-input").value = eventCode;
+    
+    if (["All", "Approved", "Pending", "Rejected"].includes(statusQuery)) {
+      document.getElementById(`status-${statusQuery.toLowerCase()}`).classList.add("active");
+    } else {
+      document.getElementById("status-all").classList.add("active");
+    }
+    
+    const form = document.getElementById("event-code-search");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newEventCode = document.getElementById("event-input").value.trim();
+      const currentStatus = statusQuery || "All";
+      window.location.href = `?eventCode=${newEventCode}&status=${currentStatus}`;
+    });
+    
+    function filterSubmissions() {
+      const statusFilter = statusQuery || "All";
+      const eventFilter = eventCode;
+      const submissions = document.querySelectorAll('.grid-submission');
+      
+      submissions.forEach(submission => {
+        let showSubmission = true;
+        
+        if (statusFilter !== "All") {
+          const statusElement = submission.querySelector('.status');
+          if (!statusElement.classList.contains(statusFilter.toLowerCase())) {
+            showSubmission = false;
+          }
+        }
+        
+        if (eventFilter && showSubmission) {
+          const eventCodeElement = submission.getAttribute('data-event-code');
+          if (eventCodeElement !== eventFilter) {
+            showSubmission = false;
+          }
+        }
+        
+        submission.style.display = showSubmission ? 'block' : 'none';
+      });
+    }
+    
+    filterSubmissions();
+  </script>
 </body>
 
 </html>
