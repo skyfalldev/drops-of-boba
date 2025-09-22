@@ -1,20 +1,44 @@
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import sharp from 'sharp';
+
+function escapeHtml(text) {
+  if (typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+function escapeUrl(url) {
+  if (typeof url !== 'string') return '#';
+  try {
+    // Validate URL format
+    const urlObj = new URL(url);
+    // Only allow http/https protocols
+    if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      return '#';
+    }
+    return encodeURI(url);
+  } catch {
+    return '#';
+  }
+}
+
+function sanitizeStatus(status) {
+  if (typeof status !== 'string') return 'pending';
+  const validStatuses = ['approved', 'pending', 'rejected'];
+  const lowercased = status.toLowerCase();
+  return validStatuses.includes(lowercased) ? lowercased : 'pending';
+}
 
 async function main() {
-  let fetch, sharp;
-  try {
-    fetch = (await import('node-fetch')).default;
-    sharp = require('sharp');
-  } catch (error) {
-    console.error('Failed to import dependencies:', error);
-    process.exit(1);
-  }
-  
   const BASE_DOMAIN = "api2.hackclub.com";
   const CDN_API = "https://cdn.hackclub.com/api/v3/new";
-  const API_TOKEN = "beans";
+  const API_TOKEN = process.env.API_TOKEN;
   
   if (!API_TOKEN) {
     console.error('API_TOKEN environment variable is required');
@@ -38,7 +62,7 @@ async function main() {
     
     const optimizedSubmissions = await Promise.all(
       submissions.map(async (submission) => {
-        return await optimizeSubmission(submission, fetch, sharp, API_TOKEN);
+        return await optimizeSubmission(submission, API_TOKEN);
       })
     );
     
@@ -74,7 +98,7 @@ async function main() {
   }
 }
 
-async function optimizeSubmission(submission, fetch, sharp, apiToken) {
+async function optimizeSubmission(submission, apiToken) {
   let photoUrl = "";
   
   if (!submission.fields.Screenshot || submission.fields.Screenshot.length === 0) {
@@ -97,7 +121,7 @@ async function optimizeSubmission(submission, fetch, sharp, apiToken) {
     } else {
       try {
         console.log(`Attempting to optimize image: ${photoUrl}`);
-        const optimizedUrl = await optimizeImageViaCDN(photoUrl, fetch, apiToken);
+        const optimizedUrl = await optimizeImageViaCDN(photoUrl, apiToken);
         
         if (optimizedUrl && optimizedUrl !== photoUrl) {
           imageMetadata[imageHash] = {
@@ -122,7 +146,7 @@ async function optimizeSubmission(submission, fetch, sharp, apiToken) {
   };
 }
 
-async function optimizeImageViaCDN(imageUrl, fetch, apiToken) {
+async function optimizeImageViaCDN(imageUrl, apiToken) {
   try {
     console.log(`Uploading to CDN: ${imageUrl}`);
     
@@ -162,16 +186,16 @@ function generateGalleryHTML(submissions) {
   let galleryHTML = '';
   
   submissions.forEach((submission) => {
-    const photoUrl = submission.optimizedPhotoUrl;
-    const status = submission.fields.Status || 'pending';
-    const codeUrl = submission.fields["Code URL"] || '#';
-    const playableUrl = submission.fields["Playable URL"] || '#';
-    const eventCode = submission.fields["Event Code"] || '';
+    const photoUrl = escapeUrl(submission.optimizedPhotoUrl);
+    const status = sanitizeStatus(submission.fields.Status);
+    const codeUrl = escapeUrl(submission.fields["Code URL"]);
+    const playableUrl = escapeUrl(submission.fields["Playable URL"]);
+    const eventCode = escapeHtml(submission.fields["Event Code"] || '');
     
     galleryHTML += `
       <div class="grid-submission" data-event-code="${eventCode}">
-        <div class="submission-photo" style="background-image: url(${photoUrl});"></div>
-        <span class="status ${status.toLowerCase()}"></span>
+        <div class="submission-photo" style="background-image: url('${photoUrl}');"></div>
+        <span class="status ${status}"></span>
         <div class="links">
           <a href="${codeUrl}" class="github-button"><i class="fa-brands fa-github"></i> Github</a>
           <a href="${playableUrl}" class="demo-button"><i class="fa-solid fa-link"></i> Demo</a>
