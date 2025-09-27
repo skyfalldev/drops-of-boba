@@ -3849,5 +3849,12 @@
     "timestamp": "2025-09-27T18:21:14.517Z",
     "status": "failed",
     "error": "CDN upload timed out"
+  },
+  "c0819e1e5485d3462d69bb81022d4375": {
+    "originalUrl": "https://v5.airtableusercontent.com/v3/u/45/45/1758960000000/6CdTEZj0hBwm8WCRZ629Yw/WuQNfDxYt2NEYUemzDx2NKR-TTvsGHuyhtH1M-kD1Z2mpM5ZtJdRbaLrMA2CLbgr4XaC8rz6nEIXjw9TF5vwrGoqggtPzeNEHPvG9of4DuGD_sYgY1BwN-kPVM3bp5MxdCkDHdnK9w3kFG8UhWQ4LQ/P-YctlLkJSNhQi0kuv4Z_sDUIPPKVPZBRsO9li3tNZ0",
+    "cdnUrl": "https://v5.airtableusercontent.com/v3/u/45/45/1758960000000/6CdTEZj0hBwm8WCRZ629Yw/WuQNfDxYt2NEYUemzDx2NKR-TTvsGHuyhtH1M-kD1Z2mpM5ZtJdRbaLrMA2CLbgr4XaC8rz6nEIXjw9TF5vwrGoqggtPzeNEHPvG9of4DuGD_sYgY1BwN-kPVM3bp5MxdCkDHdnK9w3kFG8UhWQ4LQ/P-YctlLkJSNhQi0kuv4Z_sDUIPPKVPZBRsO9li3tNZ0",
+    "timestamp": "2025-09-27T18:40:27.414Z",
+    "status": "failed",
+    "error": "CDN upload timed out"
   }
 }
